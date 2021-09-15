@@ -1,0 +1,31 @@
+###
+# Get index
+GET {{baseUrl}}/
+
+###
+# Push update to test-sensor
+POST {{baseUrl}}/sensor/v1/update
+Content-Type: application/json
+Authorization: Bearer {{washer_one_token}}
+
+{"state":"active"}
+
+###
+# Push update to another-test-sensor
+POST {{baseUrl}}/sensor/v1/update
+Content-Type: application/json
+Authorization: Bearer {{washer_two_token}}
+
+{"state":"inactive"}
+
+###
+# Push invalid update to another-test-sensor
+POST {{baseUrl}}/sensor/v1/update
+Content-Type: application/json
+Authorization: Bearer {{washer_two_token}}
+
+{"state":"blabla"}
+
+###
+# Get status
+GET {{baseUrl}}/status/v1
