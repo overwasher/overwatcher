@@ -2,6 +2,12 @@
 # Get index
 GET {{baseUrl}}/
 
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
+
 ###
 # Push update to test-sensor
 POST {{baseUrl}}/sensor/v1/update
@@ -9,6 +15,12 @@ Content-Type: application/json
 Authorization: Bearer {{washer_one_token}}
 
 {"state":"active"}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
 
 ###
 # Push update to another-test-sensor
@@ -18,6 +30,12 @@ Authorization: Bearer {{washer_two_token}}
 
 {"state":"inactive"}
 
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
+
 ###
 # Push invalid update to another-test-sensor
 POST {{baseUrl}}/sensor/v1/update
@@ -26,6 +44,19 @@ Authorization: Bearer {{washer_two_token}}
 
 {"state":"blabla"}
 
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 400, "Response status is not 400");
+    });
+%}
+
 ###
 # Get status
 GET {{baseUrl}}/status/v1
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+        client.assert(Array.isArray(response.body), "Response is not array");
+    });
+%}
