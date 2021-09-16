@@ -1,6 +1,4 @@
 using System;
-using Humanizer;
-using InfluxDB.Client;
 using InfluxDB.Client.Api.Domain;
 using InfluxDB.Client.Writes;
 using Overwatcher.Database;

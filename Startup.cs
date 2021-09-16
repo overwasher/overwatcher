@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -112,10 +113,15 @@ namespace Overwatcher
             {
                 app.UseDeveloperExceptionPage();
             }
+            else
+            {
+                app.UseExceptionHandler("/error");
+            }
 
             app.Use(async (context, next) =>
             {
-                context.Response.Headers.Add(HeaderNames.RequestId, context.TraceIdentifier);
+                var traceIdentifier = Activity.Current?.Id ?? context.TraceIdentifier;
+                context.Response.Headers.Add(HeaderNames.RequestId, traceIdentifier);
                 await next();
             });
             
