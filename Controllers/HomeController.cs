@@ -9,6 +9,7 @@ namespace Overwatcher.Controllers
     {
         private readonly Random _rnd = new Random();
         
+        [HttpGet]
         public string Index()
         {
             var variants = new[]
