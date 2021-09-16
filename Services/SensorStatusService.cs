@@ -12,19 +12,23 @@ namespace Overwatcher.Services
         private readonly DateTimeProvider _dateTimeProvider;
         private readonly object _lock = new object();
         private readonly TimeSpan _staleInterval;
+        private readonly ITelemetryService _telemetryService;
         
-        public SensorStatusService(DateTimeProvider dateTimeProvider, IConfiguration configuration)
+        public SensorStatusService(DateTimeProvider dateTimeProvider, IConfiguration configuration, ITelemetryService telemetryService)
         {
             _dateTimeProvider = dateTimeProvider;
+            _telemetryService = telemetryService;
             _staleInterval = TimeSpan.FromSeconds(configuration.GetValue<double>("StaleInterval"));
         }
 
         public void Update(string sensorId, SensorState newState)
         {
+            var time = _dateTimeProvider.UtcNow;
             lock (_lock)
             {
-                _store[sensorId] = (newState, _dateTimeProvider.UtcNow);
+                _store[sensorId] = (newState, time);
             }
+            _telemetryService.WriteStatus(sensorId, newState, time);
         }
 
         private DumpedSensorState DumpSensorState(KeyValuePair<string, (SensorState, DateTime)> pair, DateTime time)

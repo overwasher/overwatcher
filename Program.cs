@@ -23,7 +23,7 @@ namespace Overwatcher
                     {
                         InitialData = new[]
                         {
-                            new KeyValuePair<string, string>("SensorInfluxDB:Url", influxdbUrl)
+                            new KeyValuePair<string, string>("ConnectionStrings:SensorInfluxDB", influxdbUrl)
                         }
                     };
                     o.Add(memorySource);

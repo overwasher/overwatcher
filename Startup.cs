@@ -4,6 +4,7 @@ using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -13,6 +14,7 @@ using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 using Overwatcher.Auth;
 using Overwatcher.Converters;
+using Overwatcher.Database;
 using Overwatcher.Services;
 
 namespace Overwatcher
@@ -87,12 +89,24 @@ namespace Overwatcher
             services.AddSingleton<SensorStatusService>();
             services.AddSingleton<ISensorStatusReader>(x => x.GetRequiredService<SensorStatusService>());
             services.AddSingleton<ISensorStatusWriter>(x => x.GetRequiredService<SensorStatusService>());
+
+            var influxDbConnection = Configuration.GetConnectionString("SensorInfluxDB");
+
+            if (influxDbConnection != null)
+            {
+                services.AddSingleton(x => new TelemetryDbContext(influxDbConnection,
+                    x.GetRequiredService<ILogger<TelemetryDbContext>>()));
+                services.AddTransient<ITelemetryService, TelemetryService>();
+            }
+            else
+                services.AddTransient<ITelemetryService, DummyTelemetryService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
         {
-            logger.LogInformation("InfluxDB URL is {0}", Configuration.GetValue<string>("SensorInfluxDB:Url"));
+            logger.LogInformation("InfluxDB URL is {0}", 
+                Util.RemoveQueryStringByKey(Configuration.GetConnectionString("SensorInfluxDB"), "token"));
             
             if (env.IsDevelopment())
             {
