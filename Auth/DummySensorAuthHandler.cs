@@ -20,7 +20,9 @@ namespace Overwatcher.Auth
         {
         }
 
+#pragma warning disable 1998
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
+#pragma warning restore 1998
         {
             var token = "";
             var authorization = Request.Headers[HeaderNames.Authorization].ToString();
@@ -42,7 +44,7 @@ namespace Overwatcher.Auth
                     new []
                     {
                         new Claim("sensorId", token)
-                    })
+                    }, "Dummy")
             });
 
             return AuthenticateResult.Success(new AuthenticationTicket(claimsPrincipal, Scheme.Name));

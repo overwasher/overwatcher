@@ -25,7 +25,7 @@ namespace Overwatcher.Controllers
             
             _statusWriter.Update(sensorId, update.State);
             
-            return false;
+            return true;
         }
     }
 }
