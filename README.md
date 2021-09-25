@@ -4,7 +4,7 @@
 
 Overwatcher component - receives, aggregates and archives sensor node data and provides a nice API to query the current states.
 
-This is a C# wewrite of legacy TypeScript version, created to allow for more testability and maintainability.
+This is a C# rewrite of legacy TypeScript version, created to allow for more testability and maintainability.
 
 ## Software Stack
 
