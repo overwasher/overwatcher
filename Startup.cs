@@ -1,5 +1,7 @@
 using System;
 using System.Diagnostics;
+using System.IO;
+using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -17,6 +19,7 @@ using Overwatcher.Auth;
 using Overwatcher.Converters;
 using Overwatcher.Database;
 using Overwatcher.Services;
+using Overwatcher.SwaggerFilters;
 
 namespace Overwatcher
 {
@@ -50,6 +53,12 @@ namespace Overwatcher
                     Example = new OpenApiLong(1631740551905),
                     Description = "Unix timestamp millis"
                 });
+                c.OperationFilter<BinaryContentFilter>();
+                
+                // Set the comments path for the Swagger JSON and UI.
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
             });
             
             services.AddControllers()
@@ -90,6 +99,8 @@ namespace Overwatcher
             services.AddSingleton<SensorStatusService>();
             services.AddSingleton<ISensorStatusReader>(x => x.GetRequiredService<SensorStatusService>());
             services.AddSingleton<ISensorStatusWriter>(x => x.GetRequiredService<SensorStatusService>());
+
+            services.AddSingleton<ITelemetryParcelProcessor, TelemetryParcelProcessor>();
 
             var influxDbConnection = Configuration.GetConnectionString("SensorInfluxDB");
 
